@@ -19,6 +19,10 @@ namespace :package do
     $?.success?
   end
 
+  def check_dmg_installed?
+    true
+  end
+
   def wxs_content(version, arch)
     arch_wxs = case arch
       when "x86_64"
@@ -70,6 +74,33 @@ namespace :package do
     EOF
   end
 
+  def info_plist_content(version, arch)
+    <<-EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleExecutable</key>
+  <string>mruby-cli</string>
+  <key>CFBundleGetInfoString</key>
+  <string>mruby-cli #{version} #{arch}</string>
+  <key>CFBundleName</key>
+  <string>mruby-cli</string>
+  <key>CFBundleIdentifier</key>
+  <string>mruby-cli</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>CFBundleShortVersionString</key>
+  <string>#{version}</string>
+  <key>CFBundleSignature</key>
+  <string>mrbc</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+</dict>
+</plist>
+    EOF
+  end
+
   desc "create deb package"
   task :deb => [:release] do
     abort("fpm is not installed. Please check your docker install.") unless check_fpm_installed?
@@ -99,6 +130,7 @@ namespace :package do
       puts "Packaging msi for #{arch} into #{package_dir}"
       release_tar_file = "mruby-cli-#{version}-#{arch}-w64-mingw32.tgz"
       Dir.mktmpdir do |dest_dir|
+        Dir.chdir dest_dir
         `tar -zxf #{release_path}/#{release_tar_file}`
         File.write("mruby-cli-#{version}-#{arch}.wxs", wxs_content(version, arch))
         `wixl -v mruby-cli-#{version}-#{arch}.wxs && mv mruby-cli-#{version}-#{arch}.msi #{package_path}`
@@ -106,7 +138,25 @@ namespace :package do
     end
   end
 
+  desc "create dmg package"
+  task :dmg => [:release] do
+    abort("dmg tools are not installed.  Please check your docker install.") unless check_dmg_installed?
+    ["x86_64", "i386"].each do |arch|
+      puts "Packaging msi for #{arch} into #{package_dir}"
+      release_tar_file = "mruby-cli-#{version}-#{arch}-apple-darwin14.tgz"
+      Dir.mktmpdir do |dest_dir|
+        Dir.chdir dest_dir
+        `tar -zxf #{release_path}/#{release_tar_file}`
+        FileUtils.chmod 0644, "mruby-cli"
+        FileUtils.mkdir_p "mruby-cli.app/Contents/MacOs"
+        FileUtils.mv "mruby-cli", "mruby-cli.app/Contents/MacOs"
+        File.write("mruby-cli.app/Contents/Info.plist", info_plist_content(version, arch))
+        `genisoimage -V mruby-cli -D -R -apple -no-pad -o #{package_path}/mruby-cli-#{version}-#{arch}.dmg #{dest_dir}`
+      end
+    end
+  end
+
 end
 
 desc "create all packages"
-task :package => ["package:deb", "package:rpm", "package:msi"]
+task :package => ["package:deb", "package:rpm", "package:msi", "package:dmg"]
