@@ -34,7 +34,7 @@ namespace :package do
       else
         {
           string: "32-bit",
-          arch_program_files_folder: "ProgramFilesFolder",
+          program_files_folder: "ProgramFilesFolder",
           define: "<?define Win64 = \"no\"?>"
         }
     end
@@ -47,7 +47,7 @@ namespace :package do
 
   <Product
     Name='mruby-cli #{arch_wxs[:string]}'
-    Id='*'
+    Id='F43E56B6-5FF2-450C-B7B7-0B12BF066ABD'
     Version='#{version}'
     Language='1033'>
 
