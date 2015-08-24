@@ -36,37 +36,37 @@ namespace :package do
     end
 
     <<-EOF
-    <?xml version='1.0' encoding='utf-8'?>
-    <Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
+<?xml version='1.0' encoding='utf-8'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2006/wi'>
 
-      #{arch_wxs[:define]}
+  #{arch_wxs[:define]}
 
-      <Product
-        Name='mruby-cli #{arch_wxs[:string]}'
-        Id='*'
-        Version='#{version}'
-        Language='1033'>
+  <Product
+    Name='mruby-cli #{arch_wxs[:string]}'
+    Id='*'
+    Version='#{version}'
+    Language='1033'>
 
-        <Package InstallerVersion="200" Compressed="yes" Comments="comments" InstallScope="perMachine"/>
+    <Package InstallerVersion="200" Compressed="yes" Comments="comments" InstallScope="perMachine"/>
 
-        <Media Id="1" Cabinet="cabinet.cab" EmbedCab="yes"/>
+    <Media Id="1" Cabinet="cabinet.cab" EmbedCab="yes"/>
 
-        <Directory Id='TARGETDIR' Name='SourceDir'>
-          <Directory Id='#{arch_wxs[:program_files_folder]}' Name='PFiles'>
-            <Directory Id='INSTALLDIR' Name='mruby-cli'>
-              <Component Id='MainExecutable' Guid='3DCA4C4D-205C-4FA4-8BB1-C0BF41CA5EFA'>
-                <File Id='mruby-cliEXE' Name='mruby-cli.exe' DiskId='1' Source='mruby-cli.exe' KeyPath='yes'/>
-              </Component>
-            </Directory>
-          </Directory>
+    <Directory Id='TARGETDIR' Name='SourceDir'>
+      <Directory Id='#{arch_wxs[:program_files_folder]}' Name='PFiles'>
+        <Directory Id='INSTALLDIR' Name='mruby-cli'>
+          <Component Id='MainExecutable' Guid='3DCA4C4D-205C-4FA4-8BB1-C0BF41CA5EFA'>
+            <File Id='mruby-cliEXE' Name='mruby-cli.exe' DiskId='1' Source='mruby-cli.exe' KeyPath='yes'/>
+          </Component>
         </Directory>
+      </Directory>
+    </Directory>
 
-        <Feature Id='Complete' Level='1'>
-          <ComponentRef Id='MainExecutable' />
-        </Feature>
+    <Feature Id='Complete' Level='1'>
+      <ComponentRef Id='MainExecutable' />
+    </Feature>
 
-      </Product>
-    </Wix>
+  </Product>
+</Wix>
     EOF
   end
 
