@@ -76,6 +76,7 @@ namespace :package do
 
     ["x86_64", "i686"].each do |arch|
       release_tar_file = "mruby-cli-#{version}-#{arch}-pc-linux-gnu.tgz"
+      puts "Packaging deb for #{arch} into #{package_dir}"
       `fpm -s tar -t deb -a #{arch} -n mruby-cli -v #{version} --prefix /usr/bin -p #{package_path} #{release_path}/#{release_tar_file}`
     end
   end
@@ -86,6 +87,7 @@ namespace :package do
 
     ["x86_64", "i686"].each do |arch|
       release_tar_file = "mruby-cli-#{version}-#{arch}-pc-linux-gnu.tgz"
+      puts "Packaging rpm for #{arch} into #{package_dir}"
       `fpm -s tar -t rpm -a #{arch} -n mruby-cli -v #{version} --prefix /usr/bin -p #{package_path} #{release_path}/#{release_tar_file}`
     end
   end
@@ -94,6 +96,7 @@ namespace :package do
   task :msi => [:release] do
     abort("msitools is not installed.  Please check your docker install.") unless check_msi_installed?
     ["x86_64", "i686"].each do |arch|
+      puts "Packaging msi for #{arch} into #{package_dir}"
       release_tar_file = "mruby-cli-#{version}-#{arch}-w64-mingw32.tgz"
       Dir.mktmpdir do |dest_dir|
         `tar -zxf #{release_path}/#{release_tar_file}`
