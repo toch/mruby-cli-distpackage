@@ -68,6 +68,15 @@ namespace :package do
     <Feature Id='Complete' Level='1'>
       <ComponentRef Id='MainExecutable' />
     </Feature>
+    <CustomAction
+      Id="SetEnvPath"
+      Execute="immediate"
+      Impersonate="yes"
+      Return="check"
+      ExeCommand="&quot;[SystemFolder]cmd.exe&quot; /C &quot;SETX PATH &quot;%PATH%;[INSTALLDIR]&quot; >C:\Users\toch\setenvpathlog.txt &quot; " />
+    <InstallExecuteSequence>
+      <Custom Action="SetEnvPath" After="InstallInitialize" />
+    </InstallExecuteSequence>
 
   </Product>
 </Wix>
