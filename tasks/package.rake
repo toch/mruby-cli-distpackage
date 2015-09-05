@@ -101,6 +101,14 @@ namespace :package do
     EOF
   end
 
+  def osx_setup_bash_path_script
+    <<-EOF
+#!/bin/bash
+echo "export PATH=$PATH:/Applications/mruby-cli.app/Contents/MacOs" >> $HOME/.bash_profile
+source $HOME/.bash_profile
+    EOF
+  end
+
   desc "create deb package"
   task :deb => [:release] do
     abort("fpm is not installed. Please check your docker install.") unless check_fpm_installed?
@@ -147,11 +155,13 @@ namespace :package do
       Dir.mktmpdir do |dest_dir|
         Dir.chdir dest_dir
         `tar -zxf #{release_path}/#{release_tar_file}`
-        FileUtils.chmod 0644, "mruby-cli"
+        FileUtils.chmod 0755, "mruby-cli"
         FileUtils.mkdir_p "mruby-cli.app/Contents/MacOs"
         FileUtils.mv "mruby-cli", "mruby-cli.app/Contents/MacOs"
         File.write("mruby-cli.app/Contents/Info.plist", info_plist_content(version, arch))
-        `genisoimage -V mruby-cli -D -R -apple -no-pad -o #{package_path}/mruby-cli-#{version}-#{arch}.dmg #{dest_dir}`
+        File.write("add-mruby-cli-to-my-path.sh", osx_setup_bash_path_script)
+        FileUtils.chmod 0755, "add-mruby-cli-to-my-path.sh"
+        `genisoimage -V mruby-cli -D -r -apple -no-pad -o #{package_path}/mruby-cli-#{version}-#{arch}.dmg #{dest_dir}`
       end
     end
   end
