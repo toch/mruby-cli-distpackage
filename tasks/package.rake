@@ -119,13 +119,18 @@ source $HOME/.bash_profile
     EOF
   end
 
+  def log(package_dir, version, package)
+    puts "Writing packages #{package_dir}/#{version}/#{package}"
+  end
+
   desc "create deb package"
   task :deb => [:release] do
     abort("fpm is not installed. Please check your docker install.") unless check_fpm_installed?
 
     ["x86_64", "i686"].each do |arch|
       release_tar_file = "mruby-cli-#{version}-#{arch}-pc-linux-gnu.tgz"
-      puts "Packaging deb for #{arch} into #{package_dir}"
+      arch_name = (arch == "x86_64" ? "amd64" : arch)
+      log(package_dir, version, "mruby-cli_#{version}_#{arch_name}.deb")
       `fpm -s tar -t deb -a #{arch} -n mruby-cli -v #{version} --prefix /usr/bin -p #{package_path} #{release_path}/#{release_tar_file}`
     end
   end
@@ -136,7 +141,7 @@ source $HOME/.bash_profile
 
     ["x86_64", "i686"].each do |arch|
       release_tar_file = "mruby-cli-#{version}-#{arch}-pc-linux-gnu.tgz"
-      puts "Packaging rpm for #{arch} into #{package_dir}"
+      log(package_dir, version, "mruby-cli-#{version}-1.#{arch}.rpm")
       `fpm -s tar -t rpm -a #{arch} -n mruby-cli -v #{version} --prefix /usr/bin -p #{package_path} #{release_path}/#{release_tar_file}`
     end
   end
@@ -145,7 +150,7 @@ source $HOME/.bash_profile
   task :msi => [:release] do
     abort("msitools is not installed.  Please check your docker install.") unless check_msi_installed?
     ["x86_64", "i686"].each do |arch|
-      puts "Packaging msi for #{arch} into #{package_dir}"
+      log(package_dir, version, "mruby-cli-#{version}-#{arch}.msi")
       release_tar_file = "mruby-cli-#{version}-#{arch}-w64-mingw32.tgz"
       Dir.mktmpdir do |dest_dir|
         Dir.chdir dest_dir
@@ -160,7 +165,7 @@ source $HOME/.bash_profile
   task :dmg => [:release] do
     abort("dmg tools are not installed.  Please check your docker install.") unless check_dmg_installed?
     ["x86_64", "i386"].each do |arch|
-      puts "Packaging msi for #{arch} into #{package_dir}"
+      log(package_dir, version, "mruby-cli-#{version}-#{arch}.dmg")
       release_tar_file = "mruby-cli-#{version}-#{arch}-apple-darwin14.tgz"
       Dir.mktmpdir do |dest_dir|
         Dir.chdir dest_dir
