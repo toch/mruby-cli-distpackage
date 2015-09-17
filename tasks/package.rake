@@ -1,7 +1,7 @@
 namespace :package do
   require 'fileutils'
   require 'tmpdir'
-  require_relative "#{MRUBY_ROOT}/../mrblib/version"
+  require_relative "#{MRUBY_ROOT}/../mrblib/mruby-cli/version"
 
   version = MRubyCLI::Version::VERSION
   release_dir = "releases/v#{version}"
