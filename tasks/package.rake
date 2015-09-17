@@ -20,7 +20,8 @@ namespace :package do
   end
 
   def check_dmg_installed?
-    true
+    `genisoimage --version`
+    $?.success?
   end
 
   def wxs_content(version, arch)
