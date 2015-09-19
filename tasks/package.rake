@@ -50,7 +50,10 @@ namespace :package do
     Name='mruby-cli #{arch_wxs[:string]}'
     Id='F43E56B6-5FF2-450C-B7B7-0B12BF066ABD'
     Version='#{version}'
-    Language='1033'>
+    Language='1033'
+    Manufacturer='mruby-cli'
+    UpgradeCode='12268671-59a0-42d3-b1f2-79e52b5657a6'
+  >
 
     <Package InstallerVersion="200" Compressed="yes" Comments="comments" InstallScope="perMachine"/>
 
@@ -69,16 +72,6 @@ namespace :package do
     <Feature Id='Complete' Level='1'>
       <ComponentRef Id='MainExecutable' />
     </Feature>
-    <CustomAction
-      Id="SetEnvPath"
-      Execute="immediate"
-      Impersonate="yes"
-      Return="check"
-      ExeCommand="&quot;[SystemFolder]cmd.exe&quot; /C &quot;SETX PATH &quot;%PATH%;[INSTALLDIR]&quot; >C:\Users\toch\setenvpathlog.txt &quot; " />
-    <InstallExecuteSequence>
-      <Custom Action="SetEnvPath" After="InstallInitialize" />
-    </InstallExecuteSequence>
-
   </Product>
 </Wix>
     EOF
